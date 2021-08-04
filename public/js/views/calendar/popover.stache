@@ -1,0 +1,12 @@
+<h3>{{title}}</h3>
+<div class="datetime">{{displayTime}}</div>
+{{#CareGiverName}}<div class="desc"><b>Caregiver:</b> {{CareGiverName}}</div>{{/CareGiverName}}
+{{#Description}}<div class="desc"><b>Description:</b> {{&nl2br Description}}</div>{{/Description}}
+{{#isNote}}
+<div class="popover-footer">
+	<div class="form-group">
+		<button class="pull-lexft btn btn-edit-delete" data-id="{{Id}}">Delete</button>
+		<button class="pull-rixght btn btn-primary btn-edit-note" data-id="{{Id}}">Edit</button>
+	</div>
+</div>
+{{/isNote}}

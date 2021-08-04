@@ -1,0 +1,40 @@
+<div class="switch-panel">
+	<div class="content">
+		<div class="switch-card col-xs-8 col-md-6 col-lg-5 col-xs-offset-2 col-md-offset-3 col-lg-offset-4">
+
+            {{#if clients.length}}
+             <h4>Select a client</h4>
+                <div class="list-group clients-group">
+                    {{#each clients}}
+                        <a class='list-group-item' ($click)="select">
+                            <span class="circle">
+                                {{#if PhotoId}}
+                                <img src="{{getPhotoUrl this}}" alt=""/>
+                                {{else}}
+                                <i class="lnr lnr-user"></i>
+                                {{/if}}
+                            </span>
+                            {{FirstName}} {{LastName}}
+                            <span class="text-muted pull-right">
+                                <small>{{Emr}}</small>
+                            </span>
+                        </a>
+                    {{/each}}
+                </div>
+                <button ($click)="logout" class="pull-right btn btn-primary">Logout</button>
+                {{#enableCancel}}
+                    <button ($click)="cancel" class="pull-right btn btn-default">Cancel</button>
+                {{/enableCancel}}
+
+            {{else }}
+                 <div>
+                    <h4>Welcome to Family Portal</h4><br>
+                    <p>There are currently no patients associated with your account.<br> You must have Family Portal access to proceed.<br> For questions or concerns on access, please contact the patient's care organization.</p> <br>
+                    <button ($click)="logout" class="pull-right btn btn-primary">Logout</button>
+
+                </div>
+
+            {{/if}}
+		</div>
+	</div>
+</div>

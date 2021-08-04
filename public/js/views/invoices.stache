@@ -1,0 +1,144 @@
+<div class="title-content content">
+	<div class="container-fluid">
+		<h1>Invoices</h1>
+		<p>View and check invoices </p>
+	</div>
+</div>
+<div class="content">
+	<iframe id="iframeprint"></iframe>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="content">
+						<div class="row">
+							<div class="col-md-3 text-center m-b">
+								<div class="row">
+									<div class="col-xs-6 col-md-12 invoice-balance-box">
+										<h4 class="invoice-total-balance">Total Amount Due
+										<div>{{totalInvoiceBalance this}}</div>
+										</h4>
+										<button class="btn btn-block btn-{{#if viewPaidBills}}success{{else}}default{{/if}}" ($click)="invoiceToggle">View Paid Bills</button>
+									</div>
+									<div class="col-xs-6 col-md-12 invoice-pay-by">
+										<div class="invoice-by-phone col-xs-6 col-md-12">
+											<h5><i class="lnr lnr-phone-handset"></i> Pay By Phone</h5>
+											<div class="phone">{{phone provider.PhoneWork}}</div>
+										</div>
+										<div class="invoice-by-mail col-xs-6 col-md-12">
+											<h5><i class="lnr lnr-envelope-o"></i> Pay By Mail</h5>
+											<div class="provider-name">{{provider.Name}}</div>
+											<div class="provider-address">{{provider.AddressLine1}}</div>
+						                    {{#if provider.showCountyDistrict}}
+						                    <div class="provider-city-state">{{provider.CountyDistrict}}, {{provider.AddressCity}}, {{provider.AddressZipCode}}</div>
+						                    {{else}}
+						                    <div class="provider-city-state">{{provider.AddressCity}}, {{provider.AddressStateCode}} {{provider.AddressZipCode}}</div>
+						                    {{/if}}
+										</div>
+									</div>
+									<div class="col-xs-6 col-md-12 invoice-legend">
+										<ul class="list-unstyled">
+											<li>
+												<span class="event-category event-msw text-danger">
+													<i class="fa fa-square"></i> Past Due
+												</span>
+											</li>
+											<li>
+												<span class="event-category event-msw text-primary">
+													<i class="fa fa-square"></i> Due
+												</span>
+											</li>
+											<li>
+												<span class="event-category event-msw text-success">
+													<i class="fa fa-square"></i> Paid / Credit
+												</span>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-9 invoiceList">
+								<div class="form-inline dt-bootstrap no-footer">
+									<div class="row">
+										<div class="col-xs-12">
+											<table class="table dataTable no-footer" id="invoice_table" role="grid" aria-describedby="invoice_table_info">
+												<thead>
+													<tr role="row">
+														<th>Invoice No.</th>
+														<th>Details</th>
+														<th class="text-center hidden-mobile hidden-xs hidden-sm">Actions</th>
+														<th class="text-center">Amount</th>
+													</tr>
+												</thead>
+												<tbody>
+													{{#each invoices}}
+													{{#if Enabled}}
+													<tr class="invoice{{#unless viewPaidBills}}{{#invoicePaid this}} invoice-paid{{/invoicePaid}}{{/unless}}{{#invoiceOverdue this}} invoice-overdue{{/invoiceOverdue}}" role="row">
+														<td class="sorting_1">
+															<strong>{{invoiceNo InvoiceNumber}}</strong>
+														</td>
+														<td>
+															<div class="invoice-details">
+																<h5>Payment Due <span>{{dateFormat1 DueDate}}</span></h5>
+																<div>{{dateFormat1 StartDate}} - {{dateFormat1 EndDate}}</div>
+																<div>Paid Amount: {{currency PaidAmount}} {{#invoiceOverdue this}}/ Due Now: {{invoiceBalance this}}{{/invoiceOverdue}}</div>
+															</div>
+														</td>
+
+														<td class="text-center hidden-mobile hidden-xs hidden-sm">
+
+                                                        <a
+                                                            href="/front/invoices/{{Id}}/pdf?download=1" target="_blank"
+                                                            title="Download"
+                                                            class="btn-invoice">
+                                                            <i class="lnr lnr-download"></i>
+                                                        </a>
+
+                                                         <a
+                                                            href="/front/invoices/{{Id}}/pdf" target="_blank"
+                                                            title="Print"
+                                                            class="btn-invoice">
+                                                            <i class="lnr lnr-printer"></i>
+                                                        </a>
+
+														</td>
+														<td class="invoice-quick-pay text-center">
+															<div>
+																{{#invoicePaid this}}
+																<h5{{#ifOverPaidInvoice this}} class="text-success"{{/ifOverPaidInvoice}}>{{invoiceBalance this}}</h5>
+																<a href="/invoices/details/{{Id}}" class="btn btn-success btn-sm active">
+                                                                    {{#ifOverPaidInvoice this}}Credit{{else}}Paid{{/ifOverPaidInvoice}}
+                                                                </a>
+																{{else}}
+																<h5>{{invoiceBalance this}}</h5>
+                                                                <button
+                                                                    onclick="routeToInvoiceDetails('{{Id}}')"
+                                                                    class="quickPayButton btn btn-sm btn-fill btn-{{#invoiceOverdue this}}danger{{else}}primary{{/invoiceOverdue}} quickpay-btn"
+                                                                >
+                                                                    {{#PG}}Quick Pay{{else}}View Invoice{{/PG}}
+                                                                </button>
+																{{/invoicePaid}}
+															</div>
+														</td>
+													</tr>
+													{{/if}}
+													{{/each}}
+													{{^invoices}}
+													<tr>
+														<td colspan="4">No data available in table</td>
+													</tr>
+													{{/invoices}}
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

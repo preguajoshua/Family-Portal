@@ -1,0 +1,202 @@
+<div class="title-content content">
+    <div class="container-fluid">
+    	<div class="row">
+	    	<div class="col-xs-7">
+		        <h1>Care History</h1>
+		        <p>History of care given to your loved ones.</p>
+	        </div>
+	    	<div class="col-xs-5 p-t text-right hidden-print">
+	    		<div class="pull-right dropdown">
+	    			<button class="btn btn-filter dropdown-toggle hidden-lg-up" data-toggle="dropdown">Filter <i class="lnr lnr-chevron-down"></i></button>
+					<ul class="dropdown-menu hidden-lg-up" role="menu">
+						{{#each options.sideMenu}}
+						<li class="{{#ifStatus filterSelected @key}}active{{/ifStatus}}"><a ($click)="updateFilter(@key)">{{label}}</a></li>
+						{{/each}}
+	                </ul>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid carelogs-container">
+		<div class="row">
+			<div class="col-md-3 hidden-md-down">
+				<div class="box-menu-events">
+					<div class="list-group clients-group">
+						{{#each options.sideMenu}}
+						    <a class="list-group-item {{#ifStatus filterSelected @key}}active{{/ifStatus}}" ($click)="updateFilter(@key)">{{label}}</a>
+						{{/each}}
+					</div>
+
+                    {{#if (showEvvDataKeys) }}
+                        <div class="list-group clients-group-legend">
+                            <div class="list-group-item">
+                                <div class="legend-title">Electronic Visit Verification</div>
+                                <div class="legend-items">
+                                    <div>
+                                        <em class="fa fa-home fa-lg"></em>EVV Incomplete
+                                    </div>
+                                    <div>
+                                        <em class="fa fa-home fa-lg text-success"></em>EVV Complete
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {{/if}}
+				</div>
+			</div>
+
+            {{#if apiFailed}}
+                <div class="col-md-9">
+                    <div class="card error-message-card hidden-print">
+                       <p>Care history is unavailable. Please try again later.</p>
+                    </div>
+                </div>
+            {{else}}
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="header"><h4 class="title">{{pageTitle}}</h4></div>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="hidden-print"></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each items}}
+                                    <tr class="event" data-toggle="collapse" data-target="#event-{{Id}}" >
+                                        <td width="60" class="hidden-print">
+                                            {{#validPhotoAsset UserPhotoId}}
+                                            <div class="avatar"><img src="{{getPhotoUrl UserPhotoId provider.AgencyId}}" alt=""/></div>
+                                            {{else}}
+                                            <div class="avatar"><i class="lnr lnr-user ci-physician"></i></div>
+                                            {{/validPhotoAsset}}
+                                        </td>
+                                        <td>
+                                          <div class="name {{#CompletedStatus}}text-success{{else}}text-primary{{/CompletedStatus}}"><strong>{{#if CareGiverName}}{{capitalize CareGiverName}}{{else}}Unassigned{{/if}}</strong></div>
+                                            <div class="date-time">
+                                                {{dateFormat1 VisitStartTime}}
+                                                {{#if VisitStartTime}}
+                                                    {{timeFormat1 VisitStartTime}}{{#VisitEndTime}} - {{timeFormat1 VisitEndTime}}{{/VisitEndTime}}
+                                                {{else}}
+                                                    {{#TimeIn}} {{timeFormat1 TimeIn}}{{/TimeIn}}{{#TimeOut}} - {{timeFormat1 TimeOut}}{{/TimeOut}}
+                                                {{/if}}
+                                                {{#CompletedStatus}}<span class="completed">(completed)</span>{{/CompletedStatus}}
+                                            </div>
+                                            <div class="task-name">{{TaskName}}</div>
+                                        </td>
+                                        <td>
+                                            {{#canAccessDocumentation}}
+                                                {{#CompletedStatus}}
+                                                <a
+                                                    href="/front/calender/event/{{Id}}/pdf?download=1"
+                                                    target="_blank"
+                                                    title="Download"
+                                                    class="btn-invoice"
+                                                >
+                                                    <i class="lnr lnr-download"></i>
+                                                </a>
+                                                <a
+                                                    href="/front/calender/event/{{Id}}/pdf"
+                                                    target="_blank"
+                                                    title="Print"
+                                                    class="btn-invoice"
+                                                >
+                                                    <i class="lnr lnr-printer"></i>
+                                                </a>
+                                                {{/CompletedStatus}}
+                                            {{/canAccessDocumentation}}
+                                        </td>
+                                    </tr>
+
+                                    {{#if HasActivityTasks}}
+                                        <tr>
+                                            <td colspan="3" class="table-tasks">
+                                                <div class="collapse" id="event-{{Id}}">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Time</th>
+                                                                <th>Task</th>
+                                                                <th>
+                                                                    {{#if showEvvDataKeys}}
+                                                                        Status
+                                                                    {{/if}}
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {{#if TimeIn}}
+                                                                <tr>
+                                                                    <td width="100">{{timeFormat1 TimeIn}}</td>
+                                                                    <td>Clocked In {{#if isEvv}}(EVV){{/if}}</td>
+
+                                                                    <td>
+                                                                        {{#if showEvvDataKeys}}
+                                                                            {{#if isEvv}}
+                                                                                <em class="fa fa-home fa-lg{{#CompletedStatus}} text-success{{/CompletedStatus}}"></em>
+                                                                                {{else}}
+                                                                                <i class="lnr lnr-checkmark-circle{{#CompletedStatus}} text-success{{/CompletedStatus}}"></i>
+                                                                            {{/if}}
+                                                                        {{/if}}
+                                                                    </td>
+                                                                </tr>
+                                                            {{/if}}
+                                                            {{#if TimeOut}}
+                                                                <tr>
+                                                                    <td width="100">{{timeFormat1 TimeOut}}</td>
+                                                                    <td>Clocked Out {{#if isEvv}}(EVV){{/if}}</td>
+
+                                                                    <td>
+                                                                        {{#if showEvvDataKeys}}
+                                                                            {{#if isEvv}}
+                                                                                <em class="fa fa-home fa-lg{{#CompletedStatus}} text-success{{/CompletedStatus}}"></em>
+                                                                                {{else}}
+                                                                                <i class="lnr lnr-checkmark-circle{{#CompletedStatus}} text-success{{/CompletedStatus}}"></i>
+                                                                            {{/if}}
+                                                                        {{/if}}
+                                                                    </td>
+                                                                </tr>
+                                                            {{/if}}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {{/if}}
+                                {{/each}}
+                                {{^items}}
+                                    <tr>
+                                        <td colspan="3">No data available in table</td>
+                                    </tr>
+                                {{/items}}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{#if pagination.isVisible}}
+                        <div class="pagination">
+                            <div>{{pagination.currentItems}}</div>
+                            {{#unless pagination.onFirstPage}}
+                                <li><a ($click)="pagination.changePage(1)" class="page-button">&lt;&lt;</a></li>
+                                <li><a ($click)="pagination.changePage('prev')" class="page-button">&lt;</a></li>
+                            {{/unless}}
+                            {{#each pagination.pageNumbers}}
+                                <li><a ($click)="pagination.changePage({{number}})" class="page-button {{#current}}active{{/current}}">{{number}}</a></li>
+                            {{/each}}
+                            {{#unless pagination.onLastPage}}
+                                <li><a ($click)="pagination.changePage('next')" class="page-button">&gt;</a></li>
+                                <li><a ($click)="pagination.changePage('last')" class="page-button">&gt;&gt;</a></li>
+                            {{/unless}}
+                        </div>
+                    {{/if}}
+                </div>
+            {{/if}}
+		</div>
+	</div>
+</div>

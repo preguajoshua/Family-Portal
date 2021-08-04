@@ -1,0 +1,46 @@
+<div class="sidebar">
+  <div class="sidebar-wrapper">
+    <div id="sidebar">
+      <div>
+      	<div class="profile-side">
+      		<div class="row">
+            {{#if client.PhotoId}}
+            <a class="picture b-0" href="/clients/{{client.Id}}"><img src="{{getPhotoUrl client}}" alt=""/></a>
+            {{else}}
+            <a class="picture" href="/clients/{{client.Id}}"><span class="ci-user ci-lg"><i></i><b></b></span></a>
+            {{/if}}
+      			<div class="name">{{client.FirstName}} {{client.LastName}}</div>
+      	    	<div class="admitted-date">Admitted {{dateFormat1 client.StartofCareDate}}</div>
+      		</div>
+
+      		<ul class="nav">
+            		<li{{#currentRoute controller="calendar"}} class='active'{{/currentRoute}}><a href="/calendar"><i class="lnr lnr-calendar-full"></i> Calendar</a></li>
+                <li{{#currentRoute controller="medications"}} class='active'{{/currentRoute}}><a href="/medications"><i class="lnr lnr-heart-pulse"></i> Medications</a></li>
+                {{#hasAccess}}
+                <li{{#currentRoute controller="invoices"}} class='active'{{/currentRoute}}><a href="/invoices"><i class="lnr lnr-envelope"></i> Invoices</a></li>
+                {{/hasAccess}}
+                <li{{#currentRoute controller="carelogs"}} class='active'{{/currentRoute}}><a href="/carelogs"><i class="lnr lnr-history"></i> Care History</a></li>
+                <li{{#currentRoute controller="contacts"}} class='active'{{/currentRoute}}><a href="/contacts"><i class="lnr lnr-users"></i> Contacts</a></li>
+              </ul>
+
+              <div class="divider"></div>
+
+              <div class="provider">
+              	<div class="provider-name">{{provider.Name}}</div>
+              	<div class="provider-address">
+              		<i class=" text-primary lnr lnr-map-marker pull-left"></i>
+      	        	<div class="address">{{provider.AddressLine1}}</div>
+                  {{#if provider.showCountyDistrict}}
+                  <div class="address">{{provider.CountyDistrict}}, {{provider.AddressCity}}, {{provider.AddressZipCode}}</div>
+                  {{else}}
+      	        	<div class="address">{{provider.AddressCity}}, {{provider.AddressStateCode}} {{provider.AddressZipCode}}</div>
+                  {{/if}}
+              	</div>
+              	<div class="provider-contact"><i class=" text-primary lnr lnr-phone-handset"></i> {{phone provider.PhoneWork}}</div>
+              </div>
+      	</div>
+      </div>
+
+    </div>
+  </div>
+</div>

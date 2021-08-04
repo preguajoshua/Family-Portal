@@ -1,0 +1,33 @@
+<form>
+	<div class="form-group">
+		<label for="event-title">Title</label>
+		<input type="text" class="form-control" id="event-title" placeholder="Untitled event" name="Title" {($value)}="Title">
+	</div>
+	
+	<div class="form-group">
+		<label>Date & time</label>
+		<div id="date-picker">
+			<div class="row">
+				<div class="col-md-6 form-group date-picker">
+					<div class="input-group">
+						<input type="text" class="form-control date-input" {($value)}="_StartDate" name="StartDate" value='{{moment StartDate "MM/DD/YYYY"}}'/>
+						<span class="input-group-addon date-button"><i class="fa fa-calendar"></i></span>
+					</div>
+				</div>
+				
+				<div class="col-md-4 form-group" id="time-picker">
+					<div class="input-group">
+						<input type="text" class="form-control time-input"{($value)}="_StartTime" name="StartTime" value='{{moment StartDate "h:mm A"}}'/>
+						<span class="input-group-addon time-button"><i class="fa fa-clock-o"></i></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="event-desc">Description</label>
+		<textarea class="form-control" rows="5" id="event-desc" {($value)}="Description"></textarea>
+	</div>
+
+</form>

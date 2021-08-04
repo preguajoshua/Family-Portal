@@ -1,0 +1,652 @@
+<div class="title-content content hidden-print">
+    <div class="container-fluid">
+    	<div class="row">
+	    	<div class="col-xs-12 col-sm-5">
+		        <h1>Invoices</h1>
+		        <p>View and check invoices billing</p>
+	        </div>
+	        {{#if enableInvoicePage}}
+                <div class="col-xs-12 col-sm-7 p-t p-l-0 text-right">
+                    <div class="pull-right dropdown">
+                        {{#if payments.length}}
+                        <button ($click)="enableHistoryPage(true)" class="btn btn-primary"><i class="lnr lnr-history"></i> <span class="hidden-xs-down">Payment </span>History</button>
+                        {{/if}}
+
+                        <a
+                            class="btn btn-primary hidden-mobile"
+                            href="/front/invoices/{{invoice.Id}}/pdf?download=1"
+                            target="_blank"
+                            title="Download">
+                            <i class="lnr lnr-download"></i>
+                            Download
+                        </a>
+
+                        <a
+                            class="btn hidden-mobile"
+                            href="/front/invoices/{{invoice.Id}}/pdf"
+                            target="_blank"
+                            title="Print">
+                            <i class="lnr lnr-printer"></i>
+                            Print
+                        </a>
+                    </div>
+                </div>
+			{{/if}}
+		</div>
+    </div>
+</div>
+
+<div class="content">
+	{{#PG}}
+	{{^invoicePaid invoice}}
+	<div class="row cus-wizard hidden-print" style="border-bottom:0;">
+		<div class="col-xs-3 cus-wizard-step {{wizardBoxStatus wizardBoxStep 1}}">
+			<div class="text-center cus-wizard-stepnum">Invoice<span class="hidden-xs hidden-sm"> Details</span></div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="/invoices/details/{{invoice.Id}}" class="cus-wizard-dot"></a>
+		</div>
+		<div class="col-xs-3 cus-wizard-step {{wizardBoxStatus wizardBoxStep 2}}">
+			<div class="text-center cus-wizard-stepnum">Payment<span class="hidden-xs hidden-sm"> Information</span></div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="#" class="cus-wizard-dot"></a>
+		</div>
+		<div class="col-xs-3 cus-wizard-step {{wizardBoxStatus wizardBoxStep 3}}">
+			<div class="text-center cus-wizard-stepnum">Review<span class="hidden-xs hidden-sm"> & Confirm</span></div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="#" class="cus-wizard-dot"></a>
+		</div>
+		<div class="col-xs-3 cus-wizard-step final-step {{wizardBoxStatus wizardBoxStep 4}}">
+			<div class="text-center cus-wizard-stepnum">Complete<span class="hidden-xs hidden-sm"> Transaction</span></div>
+			<a href="#" class="cus-wizard-dot"></a>
+		</div>
+	</div>
+	{{/invoicePaid}}
+	{{/PG}}
+
+	<iframe id="iframeprint"></iframe>
+
+    <div class="container-fluid">
+	{{#if enableInvoicePage}}
+		<div class="row">
+			<div class="col-md-8 col-lg-9">
+				<div class="card contact-card">
+					<div class="header">
+						<h4 class="title">Invoice Details</h4>
+					</div>
+
+					<div class="content">
+						<div class="row m-b-xl">
+							<div class="col-xs-8">
+								<div class="row">
+									<div class="col-xs-4 pull-left">
+										<address>
+											<strong>{{invoice.FirstName}} {{invoice.LastName}}</strong><br>
+											{{invoice.AddressLine1}}<br>
+											{{capitalize invoice.AddressCity}}, {{invoice.AddressStateCode}} {{invoice.AddressZipCode}}<br>
+											{{phone invoice.Billing.PhoneMobile}}<br>
+											{{phone invoice.Billing.PhoneHome}}
+										</address>
+									</div>
+									<div class="col-xs-8 pull-right text-right">
+										<span>To:</span>
+										<address>
+											<strong>{{provider.Name}}</strong><br>
+											{{provider.AddressLine1}}<br>
+						                    {{#if provider.showCountyDistrict}}
+						                    {{provider.CountyDistrict}}, {{provider.AddressCity}}, {{provider.AddressZipCode}}<br>
+						                    {{else}}
+											{{provider.AddressCity}}, {{provider.AddressStateCode}} {{provider.AddressZipCode}}<br>
+						                    {{/if}}
+											{{phone provider.PhoneWork}}
+										</address>
+									</div>
+								</div>
+							</div>
+							<div class="col-xs-4 pull-right">
+									<table class="table invoice-info">
+										<tbody>
+											<tr>
+												<th>Invoice #</th>
+												<td class="text-right">{{invoiceNo invoice.InvoiceNumber}}</td>
+											</tr>
+											<tr>
+												<th>Invoice date</th>
+												<td class="text-right">{{dateFormat1 invoice.ClaimDate}}</td>
+											</tr>
+											<tr>
+												<th>Due date</th>
+												<td class="text-right">{{dateFormat1 invoice.DueDate}}</td>
+											</tr>
+										</tbody>
+									</table>
+							</div>
+						</div>
+						<div class="m-t invoice-details">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Description</th>
+										<th>Service Date</th>
+										<th class="text-center">Rate ($)</th>
+										<th class="text-center">Quantity</th>
+										<th class="text-right">Total Price</th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#each invoice.Visits}}
+									<tr>
+										<td>
+											<div>{{TaskName}}</div>
+										</td>
+										<td>{{dateFormat1 EventStartTime}}</td>
+										<td class="text-center">{{currency Rate}}</td>
+										<td class="text-center">{{round Unit}}</td>
+										<td class="text-right">{{invoiceRateQtyTotal this}}</td>
+									</tr>
+									{{/each}}
+									{{#each invoice.CustomLineItems}}
+									<tr>
+										<td>
+											<div>{{PreferredName}}</div>
+										</td>
+										<td>{{dateFormat1 VisitStartTime}}</td>
+										<td class="text-center">{{currency Rate}}</td>
+										<td class="text-center">{{round Unit}}</td>
+										<td class="text-right">{{invoiceRateQtyTotal this}}</td>
+									</tr>
+									{{/each}}
+								</tbody>
+							</table>
+						</div>
+						<div class="row m-t invoice-payment-total">
+							<div class="col-md-5 col-lg-4 pull-right">
+								<table class="table text-right">
+									<tbody>
+										<tr class="subtotal">
+											<td><strong>Subtotal :</strong></td>
+											<td>{{invoiceTotalBeforeTax invoice}}</td>
+										</tr>
+										<tr class="tax">
+											<td><strong>Tax :</strong></td>
+											<td>{{currency invoice.TotalTax}}</td>
+										</tr>
+										<tr class="total">
+											<td><strong>Total :</strong></td>
+											<td>{{invoiceTotal invoice}}</td>
+										</tr>
+										<tr class="paid">
+											<td><strong>Amount Paid :</strong></td>
+											<td>{{currency invoice.PaidAmount}}</td>
+										</tr>
+										{{#hasAdjustmentAmount invoice}}
+										<tr class="paid">
+											<td><strong>Amount Adjusted:</strong></td>
+											<td>{{adjustmentAmount invoice}}</td>
+										</tr>
+										{{/hasAdjustmentAmount}}
+										<tr class="due">
+											<td><strong>{{#ifOverPaidInvoice invoice}}Credit :{{else}}Balance Due :{{/ifOverPaidInvoice}}</strong></td>
+											<td>{{invoiceBalance invoice}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<div class="row text-right">
+							<div class="col-md-12 invoice-footer">
+								{{#if hideStuff}}
+								<a ($click)="print" href="/front/invoices/{{invoice.Id}}/pdf" class="btn btn-default pull-left"><i class="lnr lnr-printer"></i> Print</a>
+								<a ($click)="download" href="/front/invoices/{{invoice.Id}}/pdf?download=1" class="btn btn-primary pull-left"><i class="lnr lnr-download"></i> Download</a>
+								{{#if payments.length}}
+								<button ($click)="enableHistoryPage(true)" class="btn btn-primary pull-left"><i class="lnr lnr-history"></i> Payment History</button>
+								{{/if}}
+								{{/if}}
+								<button class="btn btn-default" ($click)="goback">Go Back</button>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+			<div class="col-md-4 col-lg-3 hidden-print">
+				<div class="card card-make-payment">
+					<div class="content">
+						<div class="amount-due">
+							<b>{{#ifOverPaidInvoice invoice}}Credit{{else}}Amount Due{{/ifOverPaidInvoice}}</b>
+							<div class="amount{{#invoicePaid invoice}} text-success{{/invoicePaid}}">
+								{{invoiceBalance invoice}}
+							</div>
+						</div>
+
+						<div class="row details">
+							<div class="col-xs-6">
+								<div><b>Status</b></div>
+								<div>{{#invoicePaid invoice}}<b class="text-success">Paid</b>{{else}}Pending{{/invoicePaid}}</div>
+							</div>
+							<div class="col-xs-6">
+								<div><b>Due Date</b></div>
+								<div>{{dateFormat1 invoice.DueDate}}</div>
+							</div>
+						</div>
+						{{#PG}}
+							{{^overPaid}}
+								{{^invoicePaid invoice}}
+								<button class="btn btn-fill btn-block btn-primary" ($click)="wizardBoxStep(2)">Make a Payment</button>
+								<div class="secure-note"><i class="fa fa-lock"></i> Secure Payments</div>
+								{{/invoicePaid}}
+							{{/overPaid}}
+						{{/PG}}
+					</div>
+				</div>
+			</div>
+		</div>
+		{{/if}}
+
+		{{#if enableHistoryPage}}
+		<div class="row fadeIn animated">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="header">
+						<h4 class="title">Payment History #{{invoiceNo invoice.InvoiceNumber}}</h4>
+					</div>
+					<div class="content no-m-h">
+						{{#if payments.length}}
+						<table class="table no-footer">
+							<thead>
+								<tr>
+									<th class="text-left">Type</th>
+									<th class="text-left">Description</th>
+									<th class="text-left">Status</th>
+									<th class="text-left">Date Paid</th>
+									<th class="text-right">Amount</th>
+								</tr>
+							</thead>
+							<tbody>
+								{{#each payments}}
+								<tr>
+									<td class="text-left">{{TypeName}}</td>
+									<td class="text-left">{{AdjustmentDescription}}</td>
+									<td class="text-left">Completed</td>
+									<td class="text-left">{{dateFormat1 Date}}</td>
+									<td class="text-right">{{#IsNegative}}-{{/IsNegative}}{{currency Amount}}</td>
+								</tr>
+								{{/each}}
+							</tbody>
+						</table>
+						{{/if}}
+						<div class="row m-b m-t">
+							<div class="col-md-12 history-footer text-right">
+								<button class="btn btn-default" ($click)="enableHistoryPage(false)">Go Back</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{{/if}}
+
+		{{#if enableReviewForm}}
+		<div class="row">
+			<div class="col-md-5">
+				<div class="card invoice-summary">
+					<div class="header">
+						<h4 class="title">Invoice Summary</h4>
+					</div>
+					<div class="content no-m-h">
+						<div class="invoice-summary-wrapper">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Description</th>
+										<th class="text-center">Rate ($)</th>
+										<th class="text-center">Quantity</th>
+										<th class="text-right">Total Price</th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#each invoice.Visits}}
+									<tr>
+										<td>
+											<div>{{TaskName}}</div>
+											<div>{{dateFormat1 EventStartTime}}</div>
+										</td>
+										<td class="text-center">{{currency Rate}}</td>
+										<td class="text-center">{{round Unit}}</td>
+										<td class="text-right">{{invoiceRateQtyTotal this}}</td>
+									</tr>
+									{{/each}}
+								</tbody>
+							</table>
+						</div>
+						<table class="table balance-summary text-right">
+							<tbody>
+								<tr class="total">
+									<td><strong>Total :</strong></td>
+									<td width="50">{{invoiceBalance invoice}}</td>
+								</tr>
+								{{^isFullAmount invoice paymentInvoiceAmount}}
+								<tr class="partial">
+									<td><strong>Partial Payment:</strong></td>
+									<td width="50">{{currency paymentInvoiceAmount}}</td>
+								</tr>
+								<tr class="amount-remaining">
+									<td class="paid-later"><strong>Amount Remaining:</strong></td>
+									<td width="50"><strong>{{balanceDuePartial invoice paymentInvoiceAmount}}</strong></td>
+								</tr>
+								{{/isFullAmount}}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-7">
+				<div class="card payment-review">
+					<div class="header">
+						<h4 class="title">Review Your Information</h4>
+					</div>
+					<div class="content no-m-h">
+						<div class="m-b">
+							<div class="head">Billing Address</div>
+
+							<div class="billing-address">
+								<div>{{cardInfo.first_name}} {{cardInfo.last_name}}</div>
+								<div>{{cardInfo.billing_address1}}</div>
+								<div>{{capitalize cardInfo.billing_city}}, {{cardInfo.billing_state}} {{cardInfo.billing_postcode}}</div>
+							</div>
+
+							<div class="head">Payment Methods</div>
+
+							<div class="methods">
+								<div>Credit/Debit Card: XXXX-XXXX-XXXX-{{cardInfo.last4}} <a href="#" ($click)="changePaymentInformation(true)" class="text-primary m-l-sm">Edit</a></div>
+							</div>
+
+							<div class="head">Contact Information</div>
+
+							<div class="contacts">
+								<div>{{phone cardInfo.billing_phone}}</div>
+							</div>
+						</div>
+
+						<div class="row m-b m-t">
+							<div class="col-xs-7 text-left">
+								<button class="btn btn-primary btn-fill m-r-sm {{#unless enableProcessPaymentBtn}}disabled{{/unless}}" ($click)="processPayment">Confirm & Pay</button>
+								<button class="btn btn-default" ($click)="wizardBoxStep(1)">Cancel</button>
+							</div>
+							<div class="col-xs-5 text-left">
+								{{#showPartialPaymentInput}}
+								<div class="input-group payment-amount-box">
+									<div class="input-group-btn">
+										<button type="button" class="btn btn-default dollar-label">$</button>
+									</div>
+									<input type="text" class="form-control" id="totalInvoiceAmount" {($value)}="paymentInvoiceAmount">
+									<div class="input-group-btn">
+										<button type="button" class="btn btn-default btn-fill dollar-label" ($click)="showPartialPaymentInput(false)"{{#unless enablePartialUpdateBtn}} disabled{{/unless}}>Update</button>
+									</div>
+								</div>
+								{{else}}
+                                <table class="table grand-total">
+                                    <tr>
+                                        <td class="text-right">
+                                            <span>Total:</span>
+                                        </td>
+                                        <td>
+                                            <div class="balance-due-amount">
+                                                <span>{{currency paymentInvoiceAmount}}</span>
+                                                <a class="text-primary" ($click)="showPartialPaymentInput(true)">Edit</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-right">
+                                           <span> <a class="popup_tooltips" href="#">
+    										<i class="fa fa-info-circle more_info" aria-hidden="true"></i>
+    										<span class="sr-only">2.9% + $.30 convenience fee is applied and paid to third party vendor for processing.</span>
+    										</a>Convenience Fee:</span>
+                                        </td>
+                                        <td>
+                                            <div class="balance-due-amount">
+                                                <span>{{currency paymentInvoiceFee}}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="total">
+                                        <td class="text-right">
+                                            <strong>Grand Total:</strong>
+                                        </td>
+                                        <td>
+                                            <div class="balance-due-amount">
+                                                <span>{{currency paymentInvoiceGrandTotal}}</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+								{{/showPartialPaymentInput}}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12 text-sm">Please review your information on this page to make sure it's correct. Click Pay to complete your payment</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{{/if}}
+
+		{{#if enableBillingForm}}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="content no-m-h">
+
+                        <!-- Billing Form -->
+                        <link href="/css/braintree-hosted-fields.css" rel="stylesheet">
+
+                        <form action="/" method="post" id="payment-method-add" class="payment-method-add">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="m-b">
+										<h4 class="title"><span class="btn-icon rounded">1</span> Billing Info</h4>
+									</div>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-sm-6">
+												<label>First Name*</label>
+												<input type="text" class="form-control" name="billing_first_name" {($value)}="billingInfo.FirstName"/>
+											</div>
+											<div class="col-sm-6">
+												<label>Last Name*</label>
+												<input type="text" class="form-control" name="billing_last_name" {($value)}="billingInfo.LastName"/>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Billing Address*</label>
+										<input type="text" class="form-control" name="billing_address_line_1" {($value)}="billingInfo.AddressLine1"/>
+									</div>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-sm-6">
+												<label>City*</label>
+												<input type="text" class="form-control" name="billing_address_city" {($value)}="capitalize billingInfo.AddressCity"/>
+											</div>
+											<div class="col-sm-2">
+												<label>State*</label>
+												<input type="text" class="form-control" name="billing_address_state" {($value)}="billingInfo.AddressStateCode"/>
+											</div>
+											<div class="col-sm-4">
+												<label>Zip Code*</label>
+												<input type="text" id="bill_zipcode" name="billing_address_zipcode" class="form-control" {($value)}="billingInfo.AddressZipCode"/>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Phone*</label>
+										<input type="text" class="form-control" name="billing_phone" {($value)}="phone billingInfo.PhoneHome"/>
+									</div>
+								</div>
+								<div class="col-md-6 billing-card-info">
+									<div class="m-b">
+										<h4 class="title"><span class="btn-icon rounded">2</span> Credit Card Info</h4>
+									</div>
+									<div class="form-group">
+										<label>Cardholders Name*</label>
+										<div class="row">
+											<div class="col-sm-6">
+												<input type="text" name="card_first_name" class="form-control" {($value)}="newCard.card_first_name" placeholder="First Name"/>
+											</div>
+											<div class="col-sm-6">
+												<input type="text" name="card_last_name" class="form-control" {($value)}="newCard.card_last_name" placeholder="Last Name"/>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="card-number">Card Number*</label>
+										<div class="row">
+											<div class="col-sm-6 p-b-0 p-t-0">
+                                                <div id="card-number"></div>
+											</div>
+											<div class="col-sm-6 card-logos">
+												<img class="card" src="/img/cards/visa.png"/>
+												<img class="card" src="/img/cards/mastercard.png"/>
+												<img class="card" src="/img/cards/american_express.png"/>
+												<img class="card" src="/img/cards/discover.png"/>
+                                                <img class="card" src="/img/cards/jcb.png"/>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-md-4">
+												<label for="expiration-date">Expiration Date*</label>
+                                                <div id="expiration-date"></div>
+											</div>
+											<div class="col-md-3">
+												<label for="cvv">CVV*</label>
+                                                <div id="cvv"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="row text-right">
+								<div class="col-md-12 invoice-footer">
+                                    {{#if customer.sources.length}}
+									<a class="btn btn-default" ($click)="enableBillingForm(false)">Cancel</a>
+									{{else}}
+									<a class="btn btn-default" ($click)="wizardBoxStep(1)">Cancel</a>
+									{{/if}}
+                                    <button class="btn btn-primary btn-fill" id="add-card-button" disabled>Add Card</button>
+								</div>
+							</div>
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		{{/if}}
+
+		{{#if enableCompletePaymentPage}}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card invoice-successful" style="margin-top: 4em;">
+
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+
+        					<div class="header">
+        						<h4 class="title">Payment Received</h4>
+        					</div>
+        					<div class="content">
+        						<div class="message">
+                                    Your payment is being processed. Take a screenshot to save the transaction ID for your records. Please allow up to three business days for the transaction to post to your account.
+                                </div>
+
+                                <div class="row amount-paid">
+                                    <div class="col-md-6">Transaction ID</div>
+                                    <div class="col-md-6 text-right">{{confirmationId}}</div>
+                                </div>
+
+        						<div class="row amount-paid">
+        							<div class="col-md-6">Amount Paid</div>
+        							<div class="col-md-6 text-right">Total: <span class="total">{{currency paymentInvoiceGrandTotal}}</span></div>
+        						</div>
+
+        						<div class="row text-right">
+        							<div class="col-md-12 invoice-footer">
+        								<a class="btn btn-default" href="/invoices">Back to Invoices</a>
+        							</div>
+        						</div>
+        					</div>
+
+                        </div>
+                    </div>
+
+				</div>
+			</div>
+		</div>
+		{{/if}}
+
+		{{#if enablePaymentMethodForm}}
+			{{#if customer.sources.length}}
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="header">
+							<h4 class="title">Select a Payment Method</h4>
+						</div>
+
+						<div class="content clearfix">
+							<div class="xcol-md-8 list">
+								<div class="list-item">
+									<table class="table table-condensed payment-method">
+										<thead>
+											<tr>
+												<th colspan="3">Your Saved credit and debit cards</th>
+												<th>Name on Card</th>
+												<th colspan="2">Expires on</th>
+											</tr>
+										</thead>
+										<tbody>
+											{{#each customer.sources}}
+											<tr ($click)="selectCard" id="card_{{id}}">
+												<td width="10"><input type="radio" name="card" value="1"/></td>
+												<td width="60">{{#brand}}<img class="card {{brand}}" src="/img/cards/{{brand}}.png"/>{{/brand}}</td>
+												<td width="300"><span class="ending text-muted">ending with {{last4}}</span></td>
+												<td>{{first_name}} {{last_name}}</td>
+												<td>{{pad expiry_month 2}}/{{expiry_year}}</td>
+												<td class="text-right delete-card">
+												{{#is customer.default_source id}}
+												<span class="label label-primary">Default</span>
+												{{else}}
+												<a class="text-primary" ($click)="makeDefault">Make default</a>
+												{{/is}}
+												</td>
+												<td class="text-right delete-card"><a href="#" ($click)="deleteCard"><i class="lnr lnr-trash"></i> Delete</a></td>
+											</tr>
+											{{/each}}
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+							<div class="row text-right">
+								<div class="col-md-12 invoice-footer">
+									{{#unless enableBillingForm}}<button class="btn btn-success btn-fill m-r" ($click)="enableBillingForm(true)">Add Credit/Debit Card</button>{{/unless}}
+									<button class="btn btn-default m-r-sm" ($click)="wizardBoxStep(1)">Go Back</button>
+									<button class="btn btn-primary btn-fill{{^cardInfo.id}} disabled{{/cardInfo}}" ($click)="openReviewInvoice">Continue</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{{/if}}
+		{{/if}}
+
+	</div>
+</div>

@@ -1,0 +1,209 @@
+<div class="title-content content">
+	<div class="container-fluid">
+		<h1>Invoices</h1>
+		<p>View and check invoices</p>
+	</div>
+</div>
+<div class="content">
+
+
+	<div class="row cus-wizard {{#invoicePaid invoice}}complete{{/invoicePaid}}" style="border-bottom:0;">
+		<div class="col-xs-3 cus-wizard-step {{wizardBoxStatus wizardBoxStep 1}}">
+			<div class="text-center cus-wizard-stepnum">Invoice<span class="hidden-xs hidden-sm"> Details</span></div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="/invoices/{{invoice.Id}}" class="cus-wizard-dot"></a>
+		</div>
+
+		<div class="col-xs-3 cus-wizard-step {{#invoicePaid invoice}}complete{{else}}disabled{{/invoicePaid}}">
+			<div class="text-center cus-wizard-stepnum">Payment<span class="hidden-xs hidden-sm"> Information</span></div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="#" class="cus-wizard-dot"></a>
+		</div>
+		<div class="col-xs-3 cus-wizard-step {{#invoicePaid invoice}}complete{{else}}disabled{{/invoicePaid}}">
+			<div class="text-center cus-wizard-stepnum">Review<span class="hidden-xs hidden-sm"> & Confirm</span></div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="#" class="cus-wizard-dot"></a>
+		</div>
+		<div class="col-xs-3 cus-wizard-step {{#invoicePaid invoice}}complete{{else}}disabled{{/invoicePaid}}">
+			<div class="text-center cus-wizard-stepnum">Complete<span class="hidden-xs hidden-sm"> Transaction</span></div>
+			<a href="#" class="cus-wizard-dot"></a>
+		</div>
+	</div>
+
+	<iframe id="iframeprint"></iframe>
+	<div class="container-fluid">
+		<div class="row">
+
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card contact-card">
+					<div class="header">
+						<h4 class="title">Invoice Details</h4>
+					</div>
+
+					<div class="content">
+						<div class="row m-b-xl">
+							<div class="col-md-8">
+								<div class="row">
+									<div class="col-sm-7 pull-left">
+										<address>
+											<strong>{{invoice.FirstName}} {{invoice.LastName}}</strong><br>
+											{{invoice.AddressLine1}}<br>
+											{{capitalize invoice.AddressCity}}, {{invoice.AddressStateCode}} {{invoice.AddressZipCode}}<br>
+											{{phone invoice.Billing.PhoneMobile}}<br>
+											{{phone invoice.Billing.PhoneHome}}
+										</address>
+									</div>
+									<div class="col-sm-5 pull-right text-right">
+										<span>To:</span>
+										<address>
+											<strong>{{provider.Name}}</strong><br>
+											{{provider.AddressLine1}}<br>
+						                    {{#if provider.showCountyDistrict}}
+						                    {{provider.CountyDistrict}}, {{provider.AddressCity}}, {{provider.AddressZipCode}}<br>
+						                    {{else}}
+											{{provider.AddressCity}}, {{provider.AddressStateCode}} {{provider.AddressZipCode}}<br>
+						                    {{/if}}
+											{{phone provider.PhoneWork}}
+										</address>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-3 pull-right">
+									<table class="table invoice-info">
+										<tbody>
+											<tr>
+												<th>Invoice #</th>
+												<td class="text-right">{{invoiceNo invoice.InvoiceNumber}}</td>
+											</tr>
+											<tr>
+												<th>Invoice date</th>
+												<td class="text-right">{{dateFormat1 invoice.ClaimDate}}</td>
+											</tr>
+											<tr>
+												<th>Due date</th>
+												<td class="text-right">{{dateFormat1 invoice.DueDate}}</td>
+											</tr>
+										</tbody>
+									</table>
+							</div>
+						</div>
+						<div class="table-responsive m-t invoice-details">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Description</th>
+										<th>Service Date</th>
+										<th class="text-center">Rate ($)</th>
+										<th class="text-center">Quantity</th>
+										<th class="text-right">Total Price</th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#each invoice.Visits}}
+									<tr>
+										<td>
+											<div>{{TaskName}}</div>
+										</td>
+										<td>{{dateFormat1 EventStartTime}}</td>
+										<td class="text-center">{{currency Rate}}</td>
+										<td class="text-center">{{Unit}}</td>
+										<td class="text-right">{{invoiceRateQtyTotal this}}</td>
+									</tr>
+									{{/each}}
+								</tbody>
+							</table>
+
+							{{#if payments.length}}
+							<h5>Payment History</h5>
+							<table class="table no-footer">
+								<thead>
+									<tr>
+										<th class="text-left">Type</th>
+										<th class="text-left">Description</th>
+										<th class="text-left">Status</th>
+										<th class="text-left">Date Paid</th>
+										<th class="text-right">Amount</th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#each payments}}
+									<tr>
+										<td class="text-left">{{TypeName}}</td>
+										<td class="text-left">{{AdjustmentDescription}}</td>
+										<td class="text-left">Completed</td>
+										<td class="text-left">{{dateFormat1 Date}}</td>
+										<td class="text-right">{{#IsNegative}}-{{/IsNegative}}{{currency Amount}}</td>
+									</tr>
+									{{/each}}
+								</tbody>
+							</table>
+							{{/if}}
+						</div>
+						<div class="row m-t invoice-payment-total">
+							<div class="col-md-4 pull-right">
+								<table class="table text-right">
+									<tbody>
+										<tr class="subtotal">
+											<td><strong>Subtotal :</strong></td>
+											<td>{{invoiceTotalBeforeTax invoice}}</td>
+										</tr>
+										<tr class="tax">
+											<td><strong>Tax :</strong></td>
+											<td>{{currency invoice.TotalTax}}</td>
+										</tr>
+										<tr class="total">
+											<td><strong>Total :</strong></td>
+											<td>{{invoiceTotal invoice}}</td>
+										</tr>
+										<tr class="paid">
+											<td><strong>Amount Paid :</strong></td>
+											<td>{{currency invoice.PaidAmount}}</td>
+										</tr>
+										<tr class="due">
+											<td><strong>Balance Due :</strong></td>
+											<td>{{invoiceBalance invoice}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<div class="row text-right">
+							<div class="col-md-12 invoice-footer">
+
+								<a
+                                    target="_blank"
+                                    href="/front/invoices/{{invoice.Id}}/pdf"
+                                    class="btn btn-default pull-left"
+                                     title="Print">
+                                    <i class="fa fa-print"></i>
+                                    Print
+                                </a>
+
+                                <a
+                                    ($click)="download"
+                                    title="Download"
+                                    href="/front/invoices/{{invoice.Id}}/pdf?download=1"
+                                    class="btn btn-primary pull-left">
+                                    <i class="fa fa-download"></i>
+                                    Download
+                                </a>
+
+								<button class="btn btn-default m-r-sm" ($click)="goback">Go Back</button>
+								{{#invoicePaid invoice}}
+								{{else}}
+								<a href="/invoices/{{invoice.Id}}/billing" class="btn btn-primary btn-fill m-r-0">Pay Invoice</a>
+								{{/invoicePaid}}
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>

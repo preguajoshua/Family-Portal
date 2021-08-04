@@ -1,0 +1,138 @@
+<div class="title-content content">
+    <div class="container-fluid">
+    	<div class="row">
+	    	<div class="col-xs-7">
+		        <h1>Contacts</h1>
+		        <p></p>
+	        </div>
+	    	<div class="col-xs-5 p-t text-right hidden-print">
+	    		<div class="pull-right dropdown">
+	    			<button class="btn btn-filter dropdown-toggle hidden-lg-up" data-toggle="dropdown">Filter <i class="lnr lnr-chevron-down"></i></button>
+					<ul class="dropdown-menu hidden-lg-up" role="menu">
+						<li class="{{#ifStatus filterSelected 'all'}}active{{/ifStatus}}">
+                            <a ($click)="resetFilter('all')">All</a>
+                        </li>
+						<li class="{{#ifStatus filterSelected 'family'}}active{{/ifStatus}}">
+                            <a ($click)="updateFilter('family')">Family ({{contacts.length}})</a>
+                        </li>
+						{{#if physicians.length}}
+						<li class="{{#ifStatus filterSelected 'physicians'}}active{{/ifStatus}}">
+                            <a ($click)="updateFilter('physicians')">Physicians ({{physicians.length}})</a>
+                        </li>
+						{{/if}}
+						<li class="{{#ifStatus filterSelected 'agency'}}active{{/ifStatus}}">
+                            <a ($click)="updateFilter('agency')">Agency</a>
+                        </li>
+	                </ul>
+				</div>
+			</div>
+		</div>
+
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+
+		<div class="row">
+			<div class="col-md-3 hidden-md-down">
+				<div class="list-group clients-group box-menu-contacts">
+					<a class="list-group-item {{#ifStatus filterSelected 'all'}}active{{/ifStatus}}" ($click)="resetFilter('all')">All</a>
+					<a
+                        class="list-group-item {{#ifStatus filterSelected 'family'}}active{{/ifStatus}}"
+                        ($click)="updateFilter('family')">
+                        Family {{#if apiSuccessful}} ({{contacts.length}})  {{/if}}
+                    </a>
+					{{#if physicians.length}}
+					<a
+                        class="list-group-item {{#ifStatus filterSelected 'physicians'}}active{{/ifStatus}}"
+                        ($click)="updateFilter('physicians')">
+                        Physicians  {{#if apiSuccessful}} ({{physicians.length}})  {{/if}}
+                    </a>
+					{{/if}}
+					<a class="list-group-item {{#ifStatus filterSelected 'agency'}}active{{/ifStatus}}" ($click)="updateFilter('agency')">Agency</a>
+				</div>
+			</div>
+
+            {{#if apiSuccessful}}
+                <div class="col-md-9">
+                    {{#if filters.family}}
+                        <div class="card contact-card">
+                            <div class="header">
+                                <h4 class="title p-b">Family</h4>
+                            </div>
+                            {{#each contacts}}
+                                <div class="content b-t">
+                                    <div class="row">
+                                        <div class="col-xs-2 col-sm-1 hidden-print"><div class="avatar"><i class="lnr lnr-user"></i></div></div>
+                                        <div class="col-xs-10 col-sm-11">
+                                            <div class="m-b"><b class="text-primary">{{capitalize FirstName}} {{capitalize LastName}}</b> <span>- {{relationship Relationship}}{{#IsPrimary}} <span class="label label-success">primary</span>{{/IsPrimary}}{{#IsPayor}} <span class="label label-success">payor</span>{{/IsPayor}}</span></div>
+                                            {{#if PhoneHome}}<div><i class="lnr lnr-phone-handset hidden-print"></i><b class="visible-print-inline">Phone:</b> {{phone PhoneHome}}</div>{{/if}}
+                                            {{#if EmailAddress}}<div><i class="lnr lnr-envelope hidden-print"></i><b class="visible-print-inline">Email:</b> {{EmailAddress}}</div>{{/if}}
+                                        </div>
+                                    </div>
+                                </div>
+                            {{/each}}
+                        </div>
+                    {{/if}}
+
+                    {{#if filters.physicians}}
+                        {{#if physicians.length}}
+                            <div class="card contact-card">
+                                <div class="header">
+                                    <h4 class="title p-b">Physicians</h4>
+                                </div>
+                                {{#each physicians}}
+                                    <div class="content b-t">
+                                        <div class="row">
+                                            <div class="col-xs-2 col-sm-1 hidden-print"><div class="avatar"><i class="lnr lnr-user ci-physician"></i></div></div>
+                                            <div class="col-xs-10 col-sm-11">
+                                                <div class="m-b"><b class="text-primary">{{capitalize FirstName}} {{capitalize LastName}}</b>{{#if SpecialtyDescription}} <span>- {{ SpecialtyDescription }}</span>{{/if}}{{#isPrimary}} <span class="label label-success">primary</span>{{/isPrimary}}</div>
+                                                {{#if PhoneWork}}<div><i class="lnr lnr-phone-handset hidden-print"></i><b class="visible-print-inline">Phone:</b> {{phone PhoneWork}}</div>{{/if}}
+                                                {{#if EmailAddress}}<div><i class="lnr lnr-envelope hidden-print"></i><b class="visible-print-inline">Email:</b> {{EmailAddress}}</div>{{/if}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        {{/if}}
+                    {{/if}}
+
+                    {{#if filters.agency}}
+                        <div class="card contact-card">
+                            <div class="header">
+                                <h4 class="title p-b">Agency</h4>
+                            </div>
+
+                            <div class="content b-t">
+                                <div class="row">
+                                    <div class="col-xs-2 col-sm-1 hidden-print"><div class="avatar"><i class="lnr lnr-apartment"></i></div></div>
+                                    <div class="col-xs-10 col-sm-11">
+                                        <div class="m-b-sm text-primary"><b>{{provider.Name}}</b></div>
+                                        {{#if provider.AddressLine1}}
+                                        <div class="m-b-sm">
+                                            <div>{{provider.AddressLine1}} </div>
+                                            {{#if provider.showCountyDistrict}}
+                                            <div>{{provider.CountyDistrict}}, {{provider.AddressCity}}, {{provider.AddressZipCode}}</div>
+                                            {{else}}
+                                            <div>{{provider.AddressCity}}, {{provider.AddressStateCode}} {{provider.AddressZipCode}}</div>
+                                            {{/if}}
+                                        </div>
+                                        {{/if}}
+                                        {{#if provider.PhoneWork}}<div><i class="lnr lnr-phone-handset hidden-print"></i><b class="visible-print-inline">Phone:</b> {{phone provider.PhoneWork}}</div>{{/if}}
+                                        {{#if provider.FaxNumber}}<div><i class="lnr lnr-printer hidden-print"></i><b class="visible-print-inline">Fax:</b> {{phone provider.FaxNumber}}</div>{{/if}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {{/if}}
+                </div>
+            {{else}}
+                <div class="card error-message-card">
+                    <p>Contact is unavailable. Please try again later.</p>
+                </div>
+            {{/if}}
+		</div>
+	</div>
+</div>
+

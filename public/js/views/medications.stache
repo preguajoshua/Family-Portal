@@ -1,0 +1,87 @@
+<div class="title-content content">
+    <div class="container-fluid">
+    	<div class="row">
+	    	<div class="col-sm-7">
+		        <h1>Medications</h1>
+		        <p>List all active and discontinued medications ever given.</p>
+	        </div>
+	    	<div class="col-sm-5 p-t text-right hidden-print">
+	    		<div class="pull-right dropdown">
+	    			<button class="btn btn-download hidden-mobile btn-primary{{#unless medications.length}} disabled{{/unless}}" ($click)="download" data-type="all"><i class="lnr lnr-download"></i> Download PDF</button>
+					<button class="btn btn-print hidden-mobile btn-primary hide dropdown-toggle{{#unless medications.length}} disabled{{/unless}}" data-toggle="dropdown"><i class="lnr lnr-printer"></i> Print</button>
+
+	    			<button class="btn btn-filter dropdown-toggle hidden-lg-up" data-toggle="dropdown">Filter <i class="lnr lnr-chevron-down"></i></button>
+					<ul class="dropdown-menu hidden-lg-up" role="menu">
+						{{#each options.sideMenu}}
+						<li class="{{#ifStatus filterSelected @key}}active{{/ifStatus}}"><a ($click)="medicationsFilter(@key)">{{label}}</a></li>
+						{{/each}}
+	                </ul>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+
+<div class="content">
+	<iframe id="iframeprint"></iframe>
+    <div class="container-fluid">
+		<div class="row">
+			<div class="col-md-3 hidden-print hidden-md-down">
+				<div class="list-group side-menu clients-group">
+					{{#each options.sideMenu}}
+					<a class="list-group-item {{#ifStatus filterSelected @key}}active{{/ifStatus}}" ($click)="medicationsFilter(@key)">{{label}}</a>
+					{{/each}}
+				</div>
+			</div>
+
+            {{#if apiFailed}}
+                <div class="col-md-9">
+                    <div class="card error-message-card">
+                       <p>Medication is unavailable. Please try again later.</p>
+                    </div>
+                </div>
+
+            {{else}}
+
+                <div class="col-md-9">
+                    <div class="card medication-card">
+                        <div class="header">
+                            <h4 class="title">{{pageTitle}}</h4>
+                        </div>
+
+                        <table class="table table-striped m-b-0">
+                            <thead>
+                                <tr>
+                                    <th>Medication</th>
+                                    <th>Reason</th>
+                                    <th>Instructions</th>
+                                    <th>Modified</th>
+                                    <th class="text-center">Active</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each medications}}
+                                <tr>
+                                    <td>{{MedicationDosage}}</td>
+                                    <td>{{Classification}}</td>
+                                    <td>{{Frequency}} - {{Route}}</td>
+                                    <td>{{dateFormat1 LastChangedDate}}</td>
+                                    <td class="text-center"><i class="lnr lnr-checkmark-circle checkmark {{#if Active}}text-success{{else}}text-muted{{/if}}"></i></td>
+                                </tr>
+                                {{/each}}
+                                {{^medications}}
+                                <tr>
+                                    <td colspan="5">No data available in table</td>
+                                </tr>
+                                {{/medications}}
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+            {{/if}}
+
+		</div>
+	</div>
+</div>

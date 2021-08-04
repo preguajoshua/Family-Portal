@@ -1,0 +1,36 @@
+<nav id="navbar-inner" class="navbar navbar-default navbar-fixed">
+    <div class="container-fluid"> 
+        <div class="navbar-menu">       
+            <ul class="nav navbar-nav navbar-left">
+                <li{{#currentRoute controller="calendar"}} class='active'{{/currentRoute}}><a href="/calendar"><i class="lnr lnr-calendar-full"></i> <span>Calendar</span></a></li>
+                <li{{#currentRoute controller="medications"}} class='active'{{/currentRoute}}><a href="/medications"><i class="lnr lnr-heart-pulse"></i> <span>Medications</span></a></li>
+                {{#hasAccess}}
+                <li{{#currentRoute controller="invoices"}} class='active'{{/currentRoute}}><a href="/invoices"><i class="lnr lnr-envelope"></i> <span>Invoices</span></a></li>
+                {{/hasAccess}}
+                <li{{#currentRoute controller="carelogs"}} class='active'{{/currentRoute}}><a href="/carelogs"><i class="lnr lnr-history"></i> <span>Care History</span></a></li>
+                <li{{#currentRoute controller="contacts"}} class='active'{{/currentRoute}}><a href="/contacts"><i class="lnr lnr-users"></i> <span>Contacts</span></a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="hidden-sm-down">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-bell-o"></i>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-toggle" data-toggle="dropdown">
+                        {{user.name}} <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="/clients/{{client.Id}}"><i class="fa fa-users"></i> Family</a></li>
+                        <li><a href="/profile"><i class="fa fa-list-alt"></i> My Profile</a></li>
+                        <li class="divider"></li>
+                        {{#if clients.length}}
+                        <li><a href="#" ($click)="clientSwitch"><i class="fa fa-sign-in"></i> Switch Clients</a></li>
+                        {{/if}}
+                        <li><a href="#" ($click)="logout"><i class="fa fa-sign-out"></i> Log Out</a></li>
+                    </ul>
+                </li> 
+            </ul>
+        </div>
+    </div>
+</nav>

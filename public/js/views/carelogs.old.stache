@@ -1,0 +1,43 @@
+<div class="title-content content">
+    <div class="container-fluid">        
+        <h1>Care History</h1>
+        <p>History of care given to your loved ones.</p>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="header"><h4 class="title">Care History</h4></div>
+					
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Care Task</th>
+								<th>Date & Time</th>
+								<th>Caregiver</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each items}}
+							<tr class="event-status{{#CompletedStatus}} fa-completed{{/CompletedStatus}}">
+								<td>{{TaskName}}</td>
+								<td>{{dateFormat2 VisitStartTime}}</td>
+								<td>{{CareGiverName}}</td>
+							</tr>
+							{{/each}}
+							{{^items}}
+								<tr>
+									<td colspan="3">No data available in table</td>
+								</tr>
+							{{/items}}
+						</tbody>
+					</table>
+				
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

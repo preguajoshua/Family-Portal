@@ -1,0 +1,126 @@
+
+<div class="content">
+	<div class="row bs-wizard" style="border-bottom:0;">
+		
+		<div class="col-xs-3 bs-wizard-step complete">
+			<div class="text-center bs-wizard-stepnum">Invoice Details</div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="#" class="bs-wizard-dot"></a>
+		</div>
+		
+		<div class="col-xs-3 bs-wizard-step active">
+			<div class="text-center bs-wizard-stepnum">Payment Information</div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="#" class="bs-wizard-dot"></a>
+		</div>
+		<div class="col-xs-3 bs-wizard-step disabled">
+			<div class="text-center bs-wizard-stepnum">Review & Confirm</div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="#" class="bs-wizard-dot"></a>
+		</div>		
+		<div class="col-xs-3 bs-wizard-step disabled">
+			<div class="text-center bs-wizard-stepnum">All Done</div>
+			<div class="progress"><div class="progress-bar"></div></div>
+			<a href="#" class="bs-wizard-dot"></a>
+		</div>
+	</div>
+	<iframe id="iframeprint"></iframe>
+	<div class="container-fluid">
+		<div class="row">
+			
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card contact-card">
+					<div class="content  no-m-h">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="m-b">
+									<h4 class="title">Billing Info</h4>
+								</div>
+								<form>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-sm-6">
+												<label>First Name</label>
+												<input type="text" class="form-control" {($value)}="invoice.FirstName"/>
+											</div>
+											<div class="col-sm-6">
+												<label>Last Name</label>
+												<input type="text" class="form-control" {($value)}="invoice.LastName"/>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Billing Address</label>
+										<input type="text" class="form-control" {($value)}="invoice.AddressLine1"/>
+									</div>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-sm-6">
+												<label>City</label>
+												<input type="text" class="form-control" {($value)}="capitalize invoice.AddressCity"/>
+											</div>
+											<div class="col-sm-6">
+												<label>Zip Code</label>
+												<input type="text" id="bill_zipcode" class="form-control" {($value)}="invoice.AddressZipCode"/>
+											</div>
+										</div>
+										
+									</div>
+								</form>
+							</div>
+							<div class="col-md-6">
+								<div class="m-b">
+									<h4 class="title">Credit Card Info</h4>
+								</div>
+								<form>
+									<div class="form-group">
+										<label>Cardholders Name*</label>
+										<div class="row">
+											<div class="col-sm-6">
+												<input type="text" class="form-control" placeholder="First Name"/>
+											</div>
+											<div class="col-sm-6">
+												<input type="text" class="form-control" placeholder="Last Name"/>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label>Card Number*</label>
+										<input type="text" class="form-control" id="card_number" placeholder="XXXX-XXXX-XXXX-XXXX"/>
+									</div>
+									<div class="form-group">
+										<div class="row">
+											<div class="col-md-8">
+												<label>Expiration Date*</label>
+												<div class="row">
+													<div class="col-sm-6 p-t-0">
+														<input type="text" id="card_month" class="form-control" placeholder="Month"/>
+													</div>
+													<div class="col-sm-6 p-t-0">
+														<input type="text" id="card_year" class="form-control" placeholder="Year"/>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<label>CVC Number* <i class="fa fa-question-circle"></i></label>
+												<input type="text" id="card_cvc" class="form-control" placeholder="CVC"/>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="row text-right">
+							<div class="col-md-12 invoice-footer">
+								<button class="btn btn-default" ($click)="goback">Cancel</button>
+								<button class="btn btn-primary btn-fill">Process Payment</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

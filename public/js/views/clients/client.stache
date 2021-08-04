@@ -1,0 +1,122 @@
+<div class="title-content content">
+	<div class="container-fluid">
+		<h1>Clients</h1>
+		<p></p>
+	</div>
+</div>
+<div class="content">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-3">
+				<div class="list-group clients-group">
+					{{#each clients}}
+					<a href="/clients/{{Id}}" class='list-group-item{{#routeCurrent controller="clients" action=Id}} active{{/routeCurrent}}'>
+					<span class="circle">
+					{{#if PhotoId}}
+					<img src="{{getPhotoUrl this}}" alt=""/>
+					{{else}}
+					<i class="lnr lnr-user"></i>
+					{{/if}}
+					</span> {{FirstName}} {{LastName}}</a>
+					{{/each}}
+				</div>
+			</div>
+
+            {{#if apiFailed}}
+
+                <div class="col-md-9">
+                    <div class="card error-message-card hidden-print">
+                       <p>Client list is unavailable. Please try again later</p>
+                    </div>
+                </div>
+
+            {{else}}
+
+                <div class="col-md-9">
+                    <div class="card client-card">
+                        <div class="header">
+                            <h4 class="title">Personal Information <i class="fa fa-info-circle hide" data-toggle="tooltip" data-placement="right" title="read-only"></i></h4>
+                        </div>
+                        <div class="content">
+                            {{#GetSingleClient clients from=clientId}}
+                                <form method="#" action="#">
+                                    <div class="row centerImage">
+                                        <div class="col-md-2">
+
+                                            <div id="initial" class="form-group">
+                                                {{#if PhotoId}}
+                                                <div class="picture small">
+                                                    <img src="{{getPhotoUrl this}}" alt=""/>
+                                                </div>
+                                                {{else}}
+                                                <div class="picture small">
+                                                    <span class="ci-user ci-lg"><i></i><b></b></span>
+                                                </div>
+                                                {{/if}}
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>First Name</label>
+                                                <input type="text" class="form-control" placeholder="First Name" {($value)}="FirstName" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Middle Initial</label>
+                                                <input type="text" class="form-control" placeholder="Middle Initial" {($value)}="MiddleInitial" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Last Name</label>
+                                                <input type="text" class="form-control" placeholder="Last Name" {($value)}="LastName" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Gender</label>
+                                        <input type="text" placeholder="Gender" {($value)}="Gender" class="form-control" disabled>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Primary Phone Number</label>
+                                                <input type="text" class="form-control" placeholder="Primary Phone Number" {($value)}="phone PrimaryPhone" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Secondary Phone Number</label>
+                                                <input type="text" class="form-control" placeholder="Secondary Phone Number" {($value)}="phone SecondaryPhone" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Email address</label>
+                                                <input type="email" placeholder="Email address" {($value)}="EmailAddress" class="form-control" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Admitted on</label>
+                                        <input type="text" placeholder="Admitted date" {($value)}="dateFormat1 StartofCareDate" class="form-control" disabled>
+                                    </div>
+
+                                </form>
+                            {{/getClientFrom}}
+                        </div>
+
+                    </div>
+                </div>
+
+            {{/if}}
+		</div>
+	</div>
+</div>
